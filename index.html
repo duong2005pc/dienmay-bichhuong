@@ -482,10 +482,29 @@ function render(){
     <div class="brand">${p.brand}</div><h3>${p.name}</h3>
     <div><span class="old">${money(p.old)}</span>${off>0?`<span class="off">-${off}%</span>`:""}</div>
     <div class="price">${money(p.price)}</div><div class="sold">${p.sold?"Đã bán "+p.sold:"&nbsp;"}</div>
-    <button class="buy" onclick="alert('Liên hệ Điện máy Bích Hương: 0967 887 140 để đặt mua')">Mua ngay</button></div>`;
+       <button class="buy" onclick="datMua('${p.name.replace(/'/g, "\\'")}')">Mua ngay</button></div>`;
   }).join(""):'<div class="empty">'+(D?"Không tìm thấy sản phẩm phù hợp.":"Mục này đang được cập nhật sản phẩm.")+'</div>';
 }
 render();
+  async function datMua(tenSanPham) {
+  const hoTen = prompt("Nhập họ và tên của bạn để đặt mua:\n(" + tenSanPham + ")");
+  if (!hoTen) return;
+  const soDienThoai = prompt("Nhập số điện thoại liên hệ:");
+  if (!soDienThoai) return;
+  const diaChi = prompt("Nhập địa chỉ giao hàng (VD: Ba Vì, Hà Nội):");
+
+  try {
+        const res = await fetch("https://dienmay-bichhuong.onrender.com/api/dat-hang", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hoTen, soDienThoai, sanPham: tenSanPham, diaChi })
+    });
+    const data = await res.json();
+    alert(data.thongBao);
+  } catch (err) {
+    alert("Lỗi kết nối máy chủ! Vui lòng gọi trực tiếp 0967 887 140.");
+  }
+}
 </script>
 </body>
 </html>
