@@ -1,0 +1,783 @@
+﻿
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điện máy Bích Hương</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f2f3f6;
+            color: #202b3c;
+        }
+
+        header {
+            background: #d50019;
+            color: white;
+            padding: 20px 2.5%;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo {
+            min-width: 320px;
+        }
+
+            .logo h1 {
+                font-size: 27px;
+                font-weight: 800;
+            }
+
+            .logo p {
+                margin-top: 6px;
+                font-size: 14px;
+            }
+
+        .search {
+            display: flex;
+            flex: 1;
+        }
+
+            .search input {
+                width: 100%;
+                padding: 15px;
+                border: none;
+                border-radius: 9px 0 0 9px;
+                font-size: 16px;
+                outline: none;
+            }
+
+            .search button {
+                padding: 0 25px;
+                border: none;
+                background: #202b3c;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+        .hotline {
+            min-width: 165px;
+            text-align: center;
+        }
+
+            .hotline strong {
+                display: block;
+                font-size: 22px;
+                margin-top: 5px;
+            }
+
+        nav {
+            background: white;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ddd;
+        }
+
+            nav button {
+                padding: 20px 17px;
+                background: white;
+                border: none;
+                border-bottom: 3px solid transparent;
+                font-size: 16px;
+                cursor: pointer;
+                color: #202b3c;
+            }
+
+                nav button:hover,
+                nav button.active {
+                    color: #d50019;
+                    border-bottom-color: #d50019;
+                }
+
+        .container {
+            max-width: 1550px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .breadcrumb {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .banner {
+            background: linear-gradient(110deg, #202b3c, #394762);
+            color: white;
+            padding: 43px;
+            border-radius: 13px;
+            margin-bottom: 30px;
+        }
+
+            .banner h2 {
+                font-size: 29px;
+                margin-bottom: 12px;
+            }
+
+            .banner p {
+                color: #ddd;
+                font-size: 17px;
+            }
+
+        .section-title {
+            font-size: 27px;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            background: white;
+            border: 1px solid #e0e2e8;
+            border-radius: 13px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+            .filter-row:last-child {
+                margin-bottom: 0;
+            }
+
+            .filter-row strong {
+                width: 110px;
+            }
+
+        .filter-btn {
+            border: 1px solid #ddd;
+            background: white;
+            padding: 9px 17px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+            .filter-btn.active,
+            .filter-btn:hover {
+                background: #d50019;
+                color: white;
+                border-color: #d50019;
+            }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        .product {
+            background: white;
+            border: 1px solid #e0e2e8;
+            border-radius: 13px;
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+            .product:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 5px 18px #00000015;
+            }
+
+        .product-image {
+            height: 190px;
+            background: #f0f1f4;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+            .product-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+        .product h3 {
+            font-size: 15px;
+            line-height: 1.5;
+            margin: 13px 0;
+            min-height: 65px;
+        }
+
+        .price {
+            color: #d50019;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .old-price {
+            color: #888;
+            text-decoration: line-through;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .product button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            border: none;
+            border-radius: 7px;
+            color: white;
+            background: #d50019;
+            cursor: pointer;
+        }
+
+        .empty {
+            grid-column: 1/-1;
+            text-align: center;
+            background: white;
+            padding: 45px 20px;
+            border-radius: 12px;
+        }
+
+            .empty a {
+                display: inline-block;
+                margin-top: 18px;
+                color: #d50019;
+                font-weight: bold;
+            }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #0009;
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 650px;
+            max-width: 100%;
+            padding: 25px;
+            border-radius: 13px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 18px;
+            top: 12px;
+            font-size: 28px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin: 15px 0;
+        }
+
+        .modal-content p {
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        .modal-content a {
+            color: #d50019;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 30px;
+            text-align: center;
+            background: #202b3c;
+            color: white;
+        }
+
+        @media(max-width: 1100px) {
+            .products {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media(max-width: 700px) {
+            header {
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                min-width: 100%;
+            }
+
+            .hotline {
+                display: none;
+            }
+
+            .products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            nav button {
+                padding: 12px;
+            }
+
+            .banner {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <h1>Điện máy Bích Hương</h1>
+            <p>Tivi - Điều hòa - Tủ lạnh - Máy giặt</p>
+        </div>
+
+        <div class="search">
+            <input id="searchInput"
+                   type="text"
+                   placeholder="Tìm sản phẩm theo tên, hãng...">
+
+            <button onclick="searchProducts()">Tìm kiếm</button>
+        </div>
+
+        <div class="hotline">
+            Hotline mua hàng
+            <strong>0967 887 140</strong>
+        </div>
+    </header>
+
+    <nav id="categoryNav"></nav>
+
+    <main class="container">
+
+        <div class="breadcrumb">
+            Trang chủ &gt; <span id="breadcrumb">Tivi</span>
+        </div>
+
+        <section class="banner">
+            <h2 id="bannerTitle">Tivi chính hãng, giá tốt tại Ba Vì</h2>
+            <p>
+                Giao hàng, lắp đặt tận nơi. Bảo hành chính hãng.
+                Trả góp 0% qua thẻ tín dụng.
+            </p>
+        </section>
+
+        <h2 class="section-title" id="sectionTitle">
+            Tivi dành cho bạn
+        </h2>
+
+        <section class="filters">
+
+            <div class="filter-row">
+                <strong>Thương hiệu</strong>
+                <div id="brandFilters"></div>
+            </div>
+
+            <div class="filter-row">
+                <strong>Kích thước</strong>
+                <div id="sizeFilters"></div>
+            </div>
+
+            <div class="filter-row">
+                <strong>Sắp xếp theo</strong>
+                <div id="sortFilters"></div>
+            </div>
+
+        </section>
+
+        <section class="products" id="productList"></section>
+
+    </main>
+
+    <footer>
+        <h2>ĐIỆN MÁY BÍCH HƯƠNG</h2>
+        <p>Chuyên cung cấp các sản phẩm điện máy chính hãng</p>
+        <p>Hotline: 0967 887 140</p>
+    </footer>
+
+    <div class="modal" id="productModal"
+         onclick="if(event.target===this) closeModal()">
+
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">×</button>
+            <div id="modalDetails"></div>
+        </div>
+
+    </div>
+
+    <script>
+
+        // 1. DANH SÁCH 9 DANH MỤC
+
+        const categories = [
+            "Điều hòa",
+            "Tivi",
+            "Tủ lạnh",
+            "Máy giặt",
+            "Quạt",
+            "Nồi cơm",
+            "Lọc không khí",
+            "Máy lọc nước",
+            "Hút bụi"
+        ];
+
+        // 2. DỮ LIỆU SẢN PHẨM MẪU TIVI
+        // Tên và giá tham khảo từ danh mục Tivi trên Pico.vn.
+        // Các danh mục còn lại mở trang Pico để tra cứu sản phẩm.
+
+        const products = [
+            {
+                id: 1,
+                category: "Tivi",
+                name: "Tivi Led TCL 55P638 55 inch 4K-Ultra HD Google TV",
+                brand: "TCL",
+                size: "55 inch",
+                price: 12490000,
+                oldPrice: 14990000,
+                image: "",
+                description: "Tivi 55 inch, độ phân giải 4K Ultra HD, sử dụng Google TV.",
+                link: "https://pico.vn/tivi.c"
+            },
+            {
+                id: 2,
+                category: "Tivi",
+                name: "Google Tivi Sony 2K 32 Inch KD-32W830K",
+                brand: "Sony",
+                size: "32 inch",
+                price: 8490000,
+                oldPrice: 8900000,
+                image: "",
+                description: "Google Tivi Sony màn hình 32 inch.",
+                link: "https://pico.vn/tivi.c"
+            },
+            {
+                id: 3,
+                category: "Tivi",
+                name: "Tivi QLED TCL 65 inch 4K Google TV 65C645",
+                brand: "TCL",
+                size: "65 inch",
+                price: 11990000,
+                oldPrice: 18990000,
+                image: "",
+                description: "Tivi QLED TCL 65 inch, độ phân giải 4K, Google TV.",
+                link: "https://pico.vn/tivi.c"
+            },
+            {
+                id: 4,
+                category: "Tivi",
+                name: "Smart Tivi NanoCell LG 4K 55 inch 55NANO76SQA",
+                brand: "LG",
+                size: "55 inch",
+                price: 14990000,
+                oldPrice: 14990000,
+                image: "",
+                description: "Smart Tivi LG NanoCell 4K, màn hình 55 inch.",
+                link: "https://pico.vn/tivi.c"
+            },
+            {
+                id: 5,
+                category: "Tivi",
+                name: "Smart Tivi QLED Toshiba 4K 55 inch 55M450NP",
+                brand: "Toshiba",
+                size: "55 inch",
+                price: 8490000,
+                oldPrice: 8490000,
+                image: "",
+                description: "Smart Tivi Toshiba QLED 4K 55 inch.",
+                link: "https://pico.vn/tivi.c"
+            }
+        ];
+
+        // 3. BIẾN TRẠNG THÁI
+
+        let currentCategory = "Tivi";
+        let selectedBrand = "Tất cả";
+        let selectedSize = "Tất cả";
+        let currentSort = "Bán chạy";
+        let searchText = "";
+
+        // 4. HIỂN THỊ 9 DANH MỤC
+
+        function renderCategories() {
+
+            const nav = document.getElementById("categoryNav");
+
+            nav.innerHTML = categories.map(category => `
+            <button
+                class="${category === currentCategory ? 'active' : ''}"
+                onclick="changeCategory('${category}')">
+                ${category}
+            </button>
+        `).join("");
+
+        }
+
+        // 5. CHUYỂN DANH MỤC
+
+        function changeCategory(category) {
+
+            currentCategory = category;
+
+            selectedBrand = "Tất cả";
+            selectedSize = "Tất cả";
+            searchText = "";
+
+            document.getElementById("searchInput").value = "";
+
+            document.getElementById("breadcrumb").innerText = category;
+            document.getElementById("sectionTitle").innerText =
+                category + " dành cho bạn";
+
+            document.getElementById("bannerTitle").innerText =
+                category + " chính hãng, giá tốt tại Ba Vì";
+
+            renderCategories();
+            renderFilters();
+            renderProducts();
+
+        }
+
+        // 6. HIỂN THỊ BỘ LỌC
+
+        function renderFilters() {
+
+            const isTV = currentCategory === "Tivi";
+
+            const brands = isTV
+                ? ["Tất cả", "Samsung", "Casper", "LG", "Sony", "TCL", "Toshiba"]
+                : ["Tất cả"];
+
+            const sizes = isTV
+                ? ["Tất cả", "32 inch", "43 inch", "55 inch", "65 inch", "77 inch"]
+                : ["Tất cả"];
+
+            document.getElementById("brandFilters").innerHTML =
+                brands.map(item => `
+                <button class="filter-btn
+                    ${selectedBrand === item ? 'active' : ''}"
+                    onclick="setBrand('${item}')">
+                    ${item}
+                </button>
+            `).join("");
+
+            document.getElementById("sizeFilters").innerHTML =
+                sizes.map(item => `
+                <button class="filter-btn
+                    ${selectedSize === item ? 'active' : ''}"
+                    onclick="setSize('${item}')">
+                    ${item}
+                </button>
+            `).join("");
+
+            const sorts = ["Bán chạy", "Giá thấp > cao", "Giá cao > thấp"];
+
+            document.getElementById("sortFilters").innerHTML =
+                sorts.map(item => `
+                <button class="filter-btn
+                    ${currentSort === item ? 'active' : ''}"
+                    onclick="setSort('${item}')">
+                    ${item}
+                </button>
+            `).join("");
+
+        }
+
+        function setBrand(brand) {
+            selectedBrand = brand;
+            renderFilters();
+            renderProducts();
+        }
+
+        function setSize(size) {
+            selectedSize = size;
+            renderFilters();
+            renderProducts();
+        }
+
+        function setSort(sort) {
+            currentSort = sort;
+            renderFilters();
+            renderProducts();
+        }
+
+        // 7. ĐỊNH DẠNG GIÁ
+
+        function formatPrice(price) {
+            return price.toLocaleString("vi-VN") + "đ";
+        }
+
+        // 8. HIỂN THỊ SẢN PHẨM
+
+        function renderProducts() {
+
+            const list = document.getElementById("productList");
+
+            let result = products.filter(p =>
+                p.category === currentCategory
+            );
+
+            if (selectedBrand !== "Tất cả") {
+                result = result.filter(p => p.brand === selectedBrand);
+            }
+
+            if (selectedSize !== "Tất cả") {
+                result = result.filter(p => p.size === selectedSize);
+            }
+
+            if (searchText) {
+                result = result.filter(p =>
+                    p.name.toLowerCase().includes(searchText) ||
+                    p.brand.toLowerCase().includes(searchText)
+                );
+            }
+
+            if (currentSort === "Giá thấp > cao") {
+                result.sort((a, b) => a.price - b.price);
+            }
+
+            if (currentSort === "Giá cao > thấp") {
+                result.sort((a, b) => b.price - a.price);
+            }
+
+            if (result.length === 0) {
+
+                list.innerHTML = `
+                <div class="empty">
+                    <h2>Chưa có dữ liệu sản phẩm</h2>
+
+                    <p>
+                        Bạn có thể xem sản phẩm của danh mục
+                        ${currentCategory} trực tiếp tại Pico.
+                    </p>
+
+                    <a href="https://pico.vn/"
+                       target="_blank">
+                       Truy cập website Pico.vn
+                    </a>
+                </div>
+            `;
+
+                return;
+            }
+
+            list.innerHTML = result.map(p => `
+            <div class="product"
+                 onclick="showDetails(${p.id})">
+
+                <div class="product-image">
+                    ${p.image
+                    ? `<img src="${p.image}" alt="${p.name}">`
+                    : `<span>${p.size}</span>`
+                }
+                </div>
+
+                <h3>${p.name}</h3>
+
+                <div class="price">
+                    ${formatPrice(p.price)}
+                </div>
+
+                <div class="old-price">
+                    ${p.oldPrice > p.price
+                    ? formatPrice(p.oldPrice)
+                    : ""}
+                </div>
+
+                <button onclick="event.stopPropagation();
+                    showDetails(${p.id})">
+                    Xem chi tiết
+                </button>
+
+            </div>
+        `).join("");
+
+        }
+
+        // 9. TÌM KIẾM SẢN PHẨM
+
+        function searchProducts() {
+
+            searchText = document.getElementById("searchInput")
+                .value.trim().toLowerCase();
+
+            renderProducts();
+
+        }
+
+        document.getElementById("searchInput")
+            .addEventListener("keydown", function (event) {
+
+                if (event.key === "Enter") {
+                    searchProducts();
+                }
+
+            });
+
+        // 10. XEM CHI TIẾT SẢN PHẨM
+
+        function showDetails(id) {
+
+            const p = products.find(item => item.id === id);
+
+            if (!p) return;
+
+            document.getElementById("modalDetails").innerHTML = `
+
+            <h2>${p.name}</h2>
+
+            <p><b>Danh mục:</b> ${p.category}</p>
+
+            <p><b>Thương hiệu:</b> ${p.brand}</p>
+
+            <p><b>Kích thước:</b> ${p.size}</p>
+
+            <p><b>Giá bán tham khảo:</b>
+                <span style="color:#d50019;font-weight:bold">
+                    ${formatPrice(p.price)}
+                </span>
+            </p>
+
+            <p><b>Thông tin:</b> ${p.description}</p>
+
+            <a href="${p.link}" target="_blank">
+                Xem thông tin tại Pico.vn
+            </a>
+
+        `;
+
+            document.getElementById("productModal")
+                .style.display = "flex";
+
+        }
+
+        function closeModal() {
+            document.getElementById("productModal")
+                .style.display = "none";
+        }
+
+        // 11. KHỞI ĐỘNG WEBSITE
+
+        renderCategories();
+        renderFilters();
+        renderProducts();
+
+    </script>
+
+</body>
+</html>
