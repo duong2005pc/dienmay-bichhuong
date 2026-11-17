@@ -273,7 +273,7 @@ button {
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 750px;
+    min-width: 1050px;
 }
 
 th, td {
@@ -469,6 +469,26 @@ th {
                 </div>
 
                 <div class="form-group">
+                    <label>Thương hiệu</label>
+                    <input type="text" id="productBrand" placeholder="Ví dụ: Samsung">
+                </div>
+
+                <div class="form-group">
+                    <label>Giá gốc (VNĐ)</label>
+                    <input type="number" id="productOldPrice" min="0" placeholder="Giá trước khi giảm">
+                </div>
+
+                <div class="form-group">
+                    <label>Thông số / kích thước</label>
+                    <input type="number" id="productSpec" min="0" placeholder="Ví dụ: 65 (inch), 9000 (BTU)">
+                </div>
+
+                <div class="form-group">
+                    <label>Số lượng đã bán</label>
+                    <input type="number" id="productSold" min="0" placeholder="Ví dụ: 100">
+                </div>
+
+                <div class="form-group">
                     <label>Ảnh sản phẩm</label>
                     <input
                         type="file"
@@ -550,7 +570,11 @@ th {
                         <tr>
                             <th>Ảnh</th>
                             <th>Tên sản phẩm</th>
-                            <th>Giá</th>
+                            <th>Thương hiệu</th>
+                            <th>Giá bán</th>
+                            <th>Giá gốc</th>
+                            <th>Thông số</th>
+                            <th>Đã bán</th>
                             <th>Danh mục</th>
                             <th>Thao tác</th>
                         </tr>
@@ -558,7 +582,7 @@ th {
 
                     <tbody id="productList">
                         <tr>
-                            <td colspan="5" class="empty">
+                            <td colspan="9" class="empty">
                                 Đang tải dữ liệu...
                             </td>
                         </tr>
@@ -789,7 +813,15 @@ function hienThiDanhSach() {
 
             <td>${escapeHTML(sp.ten)}</td>
 
+            <td>${escapeHTML(sp.thuongHieu || "—")}</td>
+
             <td>${dinhDangGia(sp.gia)}</td>
+
+            <td>${sp.giaCu ? dinhDangGia(sp.giaCu) : "—"}</td>
+
+            <td>${sp.thongSo ? escapeHTML(sp.thongSo) : "—"}</td>
+
+            <td>${Number(sp.daBan || 0).toLocaleString("vi-VN")}</td>
 
             <td>${escapeHTML(tenDanhMuc[sp.danhMuc] || sp.danhMuc)}</td>
 
@@ -906,7 +938,11 @@ document.getElementById("productForm").addEventListener("submit", async function
             gia: Number(gia),
             danhMuc,
             moTa,
-            anh
+            anh,
+            thuongHieu: document.getElementById("productBrand").value.trim(),
+            giaCu: Number(document.getElementById("productOldPrice").value || 0),
+            thongSo: Number(document.getElementById("productSpec").value || 0),
+            daBan: Number(document.getElementById("productSold").value || 0)
         };
 
         let url = "/api/admin/san-pham";
@@ -958,6 +994,10 @@ function suaSanPham(id) {
     document.getElementById("productPrice").value = sp.gia || 0;
     document.getElementById("productCategory").value = sp.danhMuc || "";
     document.getElementById("productDescription").value = sp.moTa || "";
+    document.getElementById("productBrand").value = sp.thuongHieu || "";
+    document.getElementById("productOldPrice").value = sp.giaCu || "";
+    document.getElementById("productSpec").value = sp.thongSo || "";
+    document.getElementById("productSold").value = sp.daBan || 0;
 
     document.getElementById("productImage").value = "";
 
