@@ -108,6 +108,26 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  maCu: {
+    type: String,
+    default: undefined
+  },
+  thuongHieu: {
+    type: String,
+    default: ''
+  },
+  giaCu: {
+    type: Number,
+    default: 0
+  },
+  thongSo: {
+    type: Number,
+    default: 0
+  },
+  daBan: {
+    type: Number,
+    default: 0
+  },
   ngayTao: {
     type: Date,
     default: Date.now
@@ -264,7 +284,40 @@ app.get('/api/san-pham', async (req, res) => {
 });
 
 // ===============================
-// 11. THÊM SẢN PHẨM
+// 11. NHẬP DỮ LIỆU SẢN PHẨM CŨ (CHỈ TẠO MỘT LẦN)
+// ===============================
+
+app.post('/api/admin/import-san-pham-cu', kiemTraAdmin, async (req, res) => {
+  try {
+    const duLieuCu = require(path.join(__dirname, '..', 'du-lieu-san-pham-cu.json'));
+
+    const operations = duLieuCu.map(sp => ({
+      updateOne: {
+        filter: { maCu: sp.maCu },
+        update: { $setOnInsert: sp },
+        upsert: true
+      }
+    }));
+
+    const ketQua = await Product.bulkWrite(operations, { ordered: false });
+
+    res.json({
+      thanhCong: true,
+      thongBao: `Đã nhập ${ketQua.upsertedCount || 0} sản phẩm cũ mới. Dữ liệu cũ đã có sẽ không bị nhân đôi.`,
+      soLuongMoi: ketQua.upsertedCount || 0,
+      tongDuLieuCu: duLieuCu.length
+    });
+  } catch (error) {
+    console.error('Lỗi nhập dữ liệu sản phẩm cũ:', error);
+    res.status(500).json({
+      thanhCong: false,
+      thongBao: 'Không thể nhập dữ liệu sản phẩm cũ!'
+    });
+  }
+});
+
+// ===============================
+// 12. THÊM SẢN PHẨM
 // ===============================
 
 app.post('/api/admin/san-pham', kiemTraAdmin, async (req, res) => {
