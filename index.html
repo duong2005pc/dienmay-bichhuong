@@ -506,11 +506,16 @@ async function napSanPhamTuMayChu(){
     if(!response.ok) throw new Error("Không tải được sản phẩm từ máy chủ");
     const result=await response.json();
     if(!result.thanhCong||!Array.isArray(result.duLieu)) throw new Error("Dữ liệu sản phẩm không hợp lệ");
+    const daNhapDu209SanPhamCu=result.duLieu.filter(sp=>
+      typeof sp.maCu==="string" && sp.maCu.startsWith("legacy-")
+    ).length>=209;
+
     for(const [maDanhMuc] of CATS){
-      DATA[maDanhMuc].list=result.duLieu
+      const sanPhamTuMayChu=result.duLieu
         .filter(sp=>sp.danhMuc===maDanhMuc)
         .map(sp=>({
           id:sp._id,
+          maCu:sp.maCu||"",
           brand:sp.thuongHieu||"",
           name:sp.ten||"",
           size:Number(sp.thongSo)||0,
@@ -519,6 +524,19 @@ async function napSanPhamTuMayChu(){
           sold:Number(sp.daBan)||0,
           anh:sp.anh||""
         }));
+
+      if(daNhapDu209SanPhamCu){
+        // Khi đã nhập đủ dữ liệu cũ, MongoDB là nguồn dữ liệu chính thức.
+        DATA[maDanhMuc].list=sanPhamTuMayChu;
+      }else{
+        // Trước khi nhập xong, giữ sản phẩm cũ và bổ sung sản phẩm mới từ Admin.
+        const sanPhamCu=DATA[maDanhMuc].list;
+        const tenDaCo=new Set(sanPhamTuMayChu.map(sp=>sp.name.trim().toLowerCase()));
+        DATA[maDanhMuc].list=[
+          ...sanPhamTuMayChu,
+          ...sanPhamCu.filter(sp=>!tenDaCo.has(sp.name.trim().toLowerCase()))
+        ];
+      }
     }
     render();
   }catch(error){
