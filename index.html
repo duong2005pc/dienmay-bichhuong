@@ -85,6 +85,8 @@ h1{font-size:22px;margin:6px 0 12px}
 .badge{position:absolute;left:0;top:10px;z-index:2;background:var(--orange);color:#fff;font-size:12px;font-weight:700;padding:3px 10px 3px 8px;border-radius:0 6px 6px 0}
 .tv{aspect-ratio:4/3;background:radial-gradient(circle at 50% 40%,#f1f7ff,#e3eefc);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative;overflow:hidden}
 .tv:before{content:"";position:absolute;right:-18px;bottom:-18px;width:70px;height:70px;border-radius:50%;border:8px solid rgba(41,182,246,.18)}
+.product-photo{width:100%;height:100%;object-fit:contain;padding:8px;position:relative;z-index:1}
+
 .screen{width:80%;aspect-ratio:16/9;background:linear-gradient(170deg,#ffb36b 0%,#ff7eb3 25%,#4a8fe8 55%,#16336b 100%);border-radius:3px;border:3px solid #0f1628;position:relative;overflow:hidden}
 .screen:before{content:"";position:absolute;left:-5%;bottom:0;width:70%;height:55%;background:#123a5e;clip-path:polygon(0 100%,35% 20%,55% 55%,75% 10%,100% 100%)}
 .screen:after{content:"";position:absolute;right:-5%;bottom:0;width:60%;height:40%;background:#0b2447;clip-path:polygon(0 100%,40% 30%,70% 60%,100% 15%,100% 100%)}
@@ -461,31 +463,70 @@ function chips(id,list,key,label){
     return `<button class="chip ${S[key]===val?"on":""}" onclick="S.${key}=${JSON.stringify(val).replace(/"/g,"&quot;")};render()">${txt}</button>`;
   }).join("");
 }
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
 function render(){
   const D=DATA[cat],P=D?D.list:[];
-  const brands=["Tất cả",...new Set(P.map(p=>p.brand))];
-  const sizes=[0,...[...new Set(P.map(p=>p.size))].sort((a,b)=>a-b)];
+  const brands=["Tất cả",...new Set(P.map(p=>p.brand).filter(Boolean))];
+  const sizes=[0,...[...new Set(P.map(p=>p.size).filter(v=>Number(v)>0))].sort((a,b)=>a-b)];
   document.getElementById("nav").innerHTML=CATS.map(c=>`<a class="${c[0]===cat?"on":""}" onclick="setCat('${c[0]}')">${c[1]}</a>`).join("");
   document.getElementById("ptitle").textContent=D?D.title:CATS.find(c=>c[0]===cat)[1]+" dành cho bạn";
   document.getElementById("szl").textContent=D?D.szl:"Kích thước";
   chips("brands",brands,"brand",v=>v);
-  chips("sizes",sizes,"size",v=>v?(D.lab?D.lab[v]:v.toLocaleString("vi-VN")+D.unit):"Tất cả");
+  chips("sizes",sizes,"size",v=>v?(D.lab?D.lab[v]:v.toLocaleString("vi-VN")+(D.unit||"")):"Tất cả");
   chips("sorts",sorts,"sort");
   const q=document.getElementById("q").value.trim().toLowerCase();
   let list=P.filter(p=>(S.brand==="Tất cả"||p.brand===S.brand)&&(!S.size||p.size===S.size)&&(!q||p.name.toLowerCase().includes(q)));
   if(S.sort==="asc")list.sort((a,b)=>a.price-b.price);
   else if(S.sort==="desc")list.sort((a,b)=>b.price-a.price);
-  else list.sort((a,b)=>b.sold-a.sold);
+  else list.sort((a,b)=>(b.sold||0)-(a.sold||0));
   document.getElementById("grid").innerHTML=list.length?list.map(p=>{
-    const off=Math.round((1-p.price/p.old)*100);
-    return `<div class="card">${off>0?`<span class="badge">Giảm ${off}%</span>`:""}<div class="tv">${D.tv?`<div class="screen"><span>${p.size}"</span></div><i class="foot"></i>`:D.ico?ICO[D.ico]:`<div class="acu"><span>${p.size.toLocaleString("vi-VN")} BTU</span></div>`}</div>
-    <div class="brand">${p.brand}</div><h3>${p.name}</h3>
-    <div><span class="old">${money(p.old)}</span>${off>0?`<span class="off">-${off}%</span>`:""}</div>
-    <div class="price">${money(p.price)}</div><div class="sold">${p.sold?"Đã bán "+p.sold:"&nbsp;"}</div>
-       <button class="buy" onclick="datMua('${p.name.replace(/'/g, "\\'")}')">Mua ngay</button></div>`;
+    const off=p.old>p.price?Math.round((1-p.price/p.old)*100):0;
+    const ten=escapeHTML(p.name);
+    const hang=escapeHTML(p.brand);
+    const anh=p.anh?'<img class="product-photo" src="'+escapeHTML(p.anh)+'" alt="'+ten+'" loading="lazy">':
+      (D.tv?'<div class="screen"><span>'+ (p.size||"") + (p.size?'"':"") +'</span></div><i class="foot"></i>':
+      D.ico?ICO[D.ico]:'<div class="acu"><span>'+(p.size?Number(p.size).toLocaleString("vi-VN")+' BTU':"")+'</span></div>');
+    const tenDatMua=String(p.name).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    return `<div class="card">${off>0?'<span class="badge">Giảm '+off+'%</span>':""}<div class="tv">${anh}</div>
+    ${hang?'<div class="brand">'+hang+'</div>':""}<h3>${ten}</h3>
+    <div>${p.old>p.price?'<span class="old">'+money(p.old)+'</span>':""}${off>0?'<span class="off">-'+off+'%</span>':""}</div>
+    <div class="price">${money(p.price)}</div><div class="sold">${p.sold?'Đã bán '+Number(p.sold).toLocaleString("vi-VN"):"&nbsp;"}</div>
+    <button class="buy" onclick="datMua('${tenDatMua}')">Mua ngay</button></div>`;
   }).join(""):'<div class="empty">'+(D?"Không tìm thấy sản phẩm phù hợp.":"Mục này đang được cập nhật sản phẩm.")+'</div>';
 }
+
+// LẤY SẢN PHẨM TỪ MONGODB; NẾU API TẠM LỖI VẪN GIỮ DANH SÁCH CŨ TRÊN TRANG
+async function napSanPhamTuMayChu(){
+  try{
+    const response=await fetch("https://dienmay-bichhuong.onrender.com/api/san-pham",{cache:"no-store"});
+    if(!response.ok) throw new Error("Không tải được sản phẩm từ máy chủ");
+    const result=await response.json();
+    if(!result.thanhCong||!Array.isArray(result.duLieu)) throw new Error("Dữ liệu sản phẩm không hợp lệ");
+    for(const [maDanhMuc] of CATS){
+      DATA[maDanhMuc].list=result.duLieu
+        .filter(sp=>sp.danhMuc===maDanhMuc)
+        .map(sp=>({
+          id:sp._id,
+          brand:sp.thuongHieu||"",
+          name:sp.ten||"",
+          size:Number(sp.thongSo)||0,
+          old:Number(sp.giaCu)||0,
+          price:Number(sp.gia)||0,
+          sold:Number(sp.daBan)||0,
+          anh:sp.anh||""
+        }));
+    }
+    render();
+  }catch(error){
+    console.warn("Đang hiển thị dữ liệu sản phẩm cũ lưu trong trang:",error);
+  }
+}
 render();
+napSanPhamTuMayChu();
   async function datMua(tenSanPham) {
   const hoTen = prompt("Nhập họ và tên của bạn để đặt mua:\n(" + tenSanPham + ")");
   if (!hoTen) return;
