@@ -322,7 +322,7 @@ app.post('/api/admin/import-san-pham-cu', kiemTraAdmin, async (req, res) => {
 
 app.post('/api/admin/san-pham', kiemTraAdmin, async (req, res) => {
   try {
-    const { ten, gia, moTa, danhMuc, anh } = req.body;
+    const { ten, gia, moTa, danhMuc, anh, thuongHieu, giaCu, thongSo, daBan } = req.body;
 
     if (!ten || gia === undefined || gia === '' || !danhMuc) {
       return res.status(400).json({
@@ -350,7 +350,11 @@ app.post('/api/admin/san-pham', kiemTraAdmin, async (req, res) => {
       gia: Number(gia),
       moTa,
       danhMuc,
-      anh
+      anh,
+      thuongHieu: thuongHieu || '',
+      giaCu: Number(giaCu) || 0,
+      thongSo: Number(thongSo) || 0,
+      daBan: Number(daBan) || 0
     });
 
     res.status(201).json({
@@ -399,7 +403,11 @@ app.put('/api/admin/san-pham/:id', kiemTraAdmin, async (req, res) => {
         ...(gia !== undefined && { gia: Number(gia) }),
         ...(moTa !== undefined && { moTa }),
         ...(danhMuc !== undefined && { danhMuc }),
-        ...(anh !== undefined && { anh })
+        ...(anh !== undefined && { anh }),
+        ...(thuongHieu !== undefined && { thuongHieu }),
+        ...(giaCu !== undefined && { giaCu: Number(giaCu) }),
+        ...(thongSo !== undefined && { thongSo: Number(thongSo) }),
+        ...(daBan !== undefined && { daBan: Number(daBan) })
       },
       {
         new: true,
