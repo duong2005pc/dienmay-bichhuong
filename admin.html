@@ -535,6 +535,10 @@ th {
                     <option value="hutbui">Máy hút bụi</option>
                 </select>
 
+                <button class="btn btn-green" onclick="nhapSanPhamCu()">
+                    Nhập 209 sản phẩm cũ
+                </button>
+
                 <button class="btn btn-blue" onclick="taiSanPham()">
                     Tải lại
                 </button>
@@ -808,6 +812,27 @@ function hienThiDanhSach() {
             </td>
         </tr>
     `).join("");
+}
+
+// NHẬP SẢN PHẨM CŨ VÀO KHO QUẢN LÝ (CÓ THỂ BẤM LẠI AN TOÀN)
+async function nhapSanPhamCu() {
+    const xacNhan = confirm(
+        "Hệ thống sẽ đưa 209 sản phẩm cũ trên trang khách vào danh sách quản lý. " +
+        "Sản phẩm đã nhập trước đó sẽ không bị tạo trùng. Bạn muốn tiếp tục?"
+    );
+
+    if (!xacNhan) return;
+
+    try {
+        const result = await goiAPI("/api/admin/import-san-pham-cu", {
+            method: "POST"
+        });
+
+        alert(result.thongBao);
+        await taiSanPham();
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
 // TÌM KIẾM VÀ LỌC
