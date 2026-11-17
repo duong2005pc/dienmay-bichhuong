@@ -7,6 +7,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
+const path = require('path');
 
 const app = express();
 
@@ -146,6 +147,7 @@ function kiemTraAdmin(req, res, next) {
     }
 
     next();
+
   } catch (error) {
     return res.status(401).json({
       thanhCong: false,
@@ -163,7 +165,15 @@ app.get('/', (req, res) => {
 });
 
 // ===============================
-// 8. ĐĂNG NHẬP ADMIN
+// 8. MỞ TRANG QUẢN TRỊ ADMIN
+// ===============================
+
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'admin.html'));
+});
+
+// ===============================
+// 9. ĐĂNG NHẬP ADMIN
 // ===============================
 
 app.post('/api/admin/dang-nhap', (req, res) => {
@@ -217,7 +227,7 @@ app.post('/api/admin/dang-nhap', (req, res) => {
 });
 
 // ===============================
-// 9. LẤY DANH SÁCH SẢN PHẨM
+// 10. LẤY DANH SÁCH SẢN PHẨM
 // ===============================
 
 app.get('/api/san-pham', async (req, res) => {
@@ -254,7 +264,7 @@ app.get('/api/san-pham', async (req, res) => {
 });
 
 // ===============================
-// 10. THÊM SẢN PHẨM
+// 11. THÊM SẢN PHẨM
 // ===============================
 
 app.post('/api/admin/san-pham', kiemTraAdmin, async (req, res) => {
@@ -305,15 +315,17 @@ app.post('/api/admin/san-pham', kiemTraAdmin, async (req, res) => {
 });
 
 // ===============================
-// 11. SỬA SẢN PHẨM
+// 12. SỬA SẢN PHẨM
 // ===============================
 
 app.put('/api/admin/san-pham/:id', kiemTraAdmin, async (req, res) => {
   try {
     const { ten, gia, moTa, danhMuc, anh } = req.body;
 
-    if (gia !== undefined &&
-        (!Number.isFinite(Number(gia)) || Number(gia) < 0)) {
+    if (
+      gia !== undefined &&
+      (!Number.isFinite(Number(gia)) || Number(gia) < 0)
+    ) {
       return res.status(400).json({
         thanhCong: false,
         thongBao: 'Giá sản phẩm không hợp lệ!'
@@ -364,7 +376,7 @@ app.put('/api/admin/san-pham/:id', kiemTraAdmin, async (req, res) => {
 });
 
 // ===============================
-// 12. XÓA SẢN PHẨM
+// 13. XÓA SẢN PHẨM
 // ===============================
 
 app.delete('/api/admin/san-pham/:id', kiemTraAdmin, async (req, res) => {
@@ -392,7 +404,7 @@ app.delete('/api/admin/san-pham/:id', kiemTraAdmin, async (req, res) => {
 });
 
 // ===============================
-// 13. TẢI ẢNH SẢN PHẨM
+// 14. TẢI ẢNH SẢN PHẨM
 // ===============================
 
 app.post(
@@ -456,7 +468,7 @@ app.post(
 );
 
 // ===============================
-// 14. ĐẶT HÀNG (GIỮ CHỨC NĂNG CŨ)
+// 15. ĐẶT HÀNG (GIỮ CHỨC NĂNG CŨ)
 // ===============================
 
 app.post('/api/dat-hang', async (req, res) => {
@@ -478,7 +490,29 @@ app.post('/api/dat-hang', async (req, res) => {
 });
 
 // ===============================
-// 15. KHỞI ĐỘNG SERVER
+// 16. XỬ LÝ LỖI TẢI ẢNH
+// ===============================
+
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    return res.status(400).json({
+      thanhCong: false,
+      thongBao: 'Ảnh quá lớn hoặc không thể tải lên!'
+    });
+  }
+
+  if (error) {
+    return res.status(400).json({
+      thanhCong: false,
+      thongBao: error.message || 'Đã xảy ra lỗi!'
+    });
+  }
+
+  next();
+});
+
+// ===============================
+// 17. KHỞI ĐỘNG SERVER
 // ===============================
 
 const PORT = process.env.PORT || 3000;
